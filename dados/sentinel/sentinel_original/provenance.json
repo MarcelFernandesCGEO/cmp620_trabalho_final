@@ -1,0 +1,23 @@
+{
+  "description": "Imagens Sentinel-2 TCI (True Color Image) — tile T22JDM",
+  "source": "ESA Copernicus Data Space Ecosystem (CDSE)",
+  "access": "Download público em https://dataspace.copernicus.eu — produto Level-2A, banda TCI (RGB composição 8 bits).",
+  "tile": "T22JDM",
+  "product_level": "L2A",
+  "band": "TCI",
+  "naming_convention": "T{tile}_{YYYYMMDD}T{HHMMSS}_TCI.jp2 — padrão oficial do produto Sentinel-2 L2A.",
+  "resolution_m": 10.0,
+  "crs": "EPSG:32722",
+  "files": [
+    {"filename": "T22JDM_20251010T132251_TCI.jp2", "date": "2025-10-10"},
+    {"filename": "T22JDM_20251015T132229_TCI.jp2", "date": "2025-10-15"},
+    {"filename": "T22JDM_20251214T132229_TCI.jp2", "date": "2025-12-14"},
+    {"filename": "T22JDM_20251219T132241_TCI.jp2", "date": "2025-12-19"},
+    {"filename": "T22JDM_20260304T132229_TCI.jp2", "date": "2026-03-04"},
+    {"filename": "T22JDM_20260418T132231_TCI.jp2", "date": "2026-04-18"},
+    {"filename": "T22JDM_20260428T132231_TCI.jp2", "date": "2026-04-28"},
+    {"filename": "T22JDM_20260503T132229_TCI.jp2", "date": "2026-05-03"}
+  ],
+  "download_date": "2026-05-13",
+  "notes": "Cenas selecionadas com baixa cobertura de nuvens sobre a área de estudo. O nome do arquivo é único e suficiente para localizar e baixar o produto idêntico no CDSE."
+}

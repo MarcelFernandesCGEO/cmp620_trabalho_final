@@ -1,0 +1,32 @@
+{
+  "file": "T21JXH_20250109T133831_TCI.jp2",
+  "path": "/dados/user_data/marcel/cmp620_final/dados/sentinel/sentinel_original/T21JXH_20250109T133831_TCI.jp2",
+  "crs": "EPSG:32721",
+  "epsg": 32721,
+  "width_px": 10980,
+  "height_px": 10980,
+  "bands": 3,
+  "dtype": "uint8",
+  "res_x_m": 10.0,
+  "res_y_m": 10.0,
+  "extent_km": {
+    "x": 109.8,
+    "y": 109.8
+  },
+  "bounds_native": {
+    "left": 600000.0,
+    "bottom": 6690220.0,
+    "right": 709800.0,
+    "top": 6800020.0
+  },
+  "bounds_wgs84": {
+    "west": -55.974086,
+    "south": -29.914661,
+    "east": -54.827149,
+    "north": -28.910544
+  },
+  "nodata": null,
+  "compression": "none",
+  "size_mb_disk": 135.2,
+  "size_mb_uncompressed": 361.7
+}

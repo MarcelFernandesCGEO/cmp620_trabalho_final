@@ -1,0 +1,32 @@
+{
+  "file": "T22JDM_20260418T132231_TCI.jp2",
+  "path": "/home/marcel/Desktop/cmp620/trabalhos/trabalho_final/frente_01/dados/sentinel/sentinel_original/clipped/T22JDM_20260418T132231_TCI.jp2",
+  "crs": "EPSG:32722",
+  "epsg": 32722,
+  "width_px": 1502,
+  "height_px": 1618,
+  "bands": 3,
+  "dtype": "uint8",
+  "res_x_m": 10.0,
+  "res_y_m": 10.0,
+  "extent_km": {
+    "x": 15.02,
+    "y": 16.18
+  },
+  "bounds_native": {
+    "left": 461830.0,
+    "bottom": 6680010.0,
+    "right": 476850.0,
+    "top": 6696190.0
+  },
+  "bounds_wgs84": {
+    "west": -51.395798,
+    "south": -30.010653,
+    "east": -51.239701,
+    "north": -29.86426
+  },
+  "nodata": null,
+  "compression": "none",
+  "size_mb_disk": 1.68,
+  "size_mb_uncompressed": 7.3
+}

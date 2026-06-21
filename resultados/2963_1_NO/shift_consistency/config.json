@@ -1,0 +1,44 @@
+{
+  "images": [
+    "/dados/user_data/marcel/cmp620_final/dados/sentinel/sentinel_original/clipped/2963_1_NO/T21JXH_20250109T133831_TCI.jp2",
+    "/dados/user_data/marcel/cmp620_final/dados/sentinel/sentinel_original/clipped/2963_1_NO/T21JXH_20250208T133901_TCI.jp2",
+    "/dados/user_data/marcel/cmp620_final/dados/sentinel/sentinel_original/clipped/2963_1_NO/T21JXH_20250223T133839_TCI.jp2",
+    "/dados/user_data/marcel/cmp620_final/dados/sentinel/sentinel_original/clipped/2963_1_NO/T21JXH_20250320T133901_TCI.jp2",
+    "/dados/user_data/marcel/cmp620_final/dados/sentinel/sentinel_original/clipped/2963_1_NO/T21JXH_20250429T133901_TCI.jp2",
+    "/dados/user_data/marcel/cmp620_final/dados/sentinel/sentinel_original/clipped/2963_1_NO/T21JXH_20250504T133839_TCI.jp2",
+    "/dados/user_data/marcel/cmp620_final/dados/sentinel/sentinel_original/clipped/2963_1_NO/T21JXH_20250623T133839_TCI.jp2",
+    "/dados/user_data/marcel/cmp620_final/dados/sentinel/sentinel_original/clipped/2963_1_NO/T21JXH_20250630T134231_TCI.jp2"
+  ],
+  "weights": "/dados/user_data/marcel/weights/esrgan_8S2.pth",
+  "n_lr": 8,
+  "tile": 32,
+  "shifts": [
+    0,
+    3,
+    6,
+    10,
+    13,
+    16,
+    19,
+    22,
+    26,
+    29,
+    31
+  ],
+  "frame_idx": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "n_anchors": 40,
+  "grid": [
+    1517,
+    1729
+  ],
+  "res_m": 9.555
+}

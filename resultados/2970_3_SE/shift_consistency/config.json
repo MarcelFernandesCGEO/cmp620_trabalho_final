@@ -1,0 +1,44 @@
+{
+  "images": [
+    "dados/sentinel/sentinel_original/clipped/T22JDM_20251010T132251_TCI.jp2",
+    "dados/sentinel/sentinel_original/clipped/T22JDM_20251015T132229_TCI.jp2",
+    "dados/sentinel/sentinel_original/clipped/T22JDM_20251214T132229_TCI.jp2",
+    "dados/sentinel/sentinel_original/clipped/T22JDM_20251219T132241_TCI.jp2",
+    "dados/sentinel/sentinel_original/clipped/T22JDM_20260304T132229_TCI.jp2",
+    "dados/sentinel/sentinel_original/clipped/T22JDM_20260418T132231_TCI.jp2",
+    "dados/sentinel/sentinel_original/clipped/T22JDM_20260428T132231_TCI.jp2",
+    "dados/sentinel/sentinel_original/clipped/T22JDM_20260503T132229_TCI.jp2"
+  ],
+  "weights": "/dados/user_data/marcel/weights/esrgan_8S2.pth",
+  "n_lr": 8,
+  "tile": 32,
+  "shifts": [
+    0,
+    3,
+    6,
+    10,
+    13,
+    16,
+    19,
+    22,
+    26,
+    29,
+    31
+  ],
+  "frame_idx": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "n_anchors": 40,
+  "grid": [
+    1467,
+    1690
+  ],
+  "res_m": 9.555
+}

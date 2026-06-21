@@ -1,0 +1,6 @@
+blend,n_regions,seam_excess_mean,seam_excess_std,psnr_ref_mean,ssim_ref_mean
+none,57,1.3029,0.0524,25.256,0.6968
+linear,57,1.099,0.0439,32.0287,0.9227
+cosine,57,1.0717,0.0417,33.3286,0.9451
+gaussian,57,1.0474,0.0403,34.3755,0.9588
+data,57,1.0928,0.0402,32.4054,0.9284

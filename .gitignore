@@ -1,0 +1,28 @@
+*.tif
+*.tiff
+*.jp2
+*.aux.xml
+
+# Dados multissensor (Planet/CBERS) preservados localmente mas fora do escopo atual
+dados/_legacy_multissensor/
+
+# Saídas de experimento pesadas (figuras/CSV versionáveis ficam fora deste ignore)
+resultados/**/*.npy
+
+# Python
+__pycache__/
+*.pyc
+
+# Virtualenv — NÃO é portável (caminhos absolutos + binários da máquina); recriar no destino
+.venv/
+venv/
+
+# LaTeX — artefatos de build (PDF é mantido como entregável)
+*.aux
+*.out
+*.nav
+*.snm
+*.toc
+*.synctex.gz
+relatorio/*.log
+apresentacao/*.log

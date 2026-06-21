@@ -1,0 +1,13 @@
+POOLED BLEND (clássicos + extras) — 57 regiões
+
+        blend   n    seam    ±dp    PSNR   SSIM
+      poisson  57   0.979  0.038   32.38  0.988
+     ensemble  57   0.999  0.050   28.07  0.784
+     smoothed  57   1.028  0.038   34.85  0.964
+     gaussian  57   1.047  0.040   34.38  0.959
+       cosine  57   1.072  0.042   33.33  0.945
+    innercrop  57   1.075  0.052   31.24  0.906
+        tukey  57   1.090  0.043   31.55  0.912
+         data  57   1.093  0.040   32.41  0.928
+       linear  57   1.099  0.044   32.03  0.923
+         none  57   1.303  0.052   25.26  0.697
