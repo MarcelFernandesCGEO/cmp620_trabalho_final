@@ -249,25 +249,28 @@ Super-Resolução por Tiles\\Análise do Gerador Satlas e Estratégia Ótima de 
 \begin{frame}{Recomendação prática de montagem}
 
   \begin{block}{Como remontar mosaicos sem costura}
+    \small % Reduzir levemente a fonte do bloco ajuda a ganhar espaço vertical
     \begin{enumerate}
       \item Usar \textbf{sobreposição não-nula} entre tiles vizinhos.
       \item Aplicar \textbf{\textit{feathering} gaussiano} na transição.
-      \item \textbf{Descartar as bordas} onde o erro de equivariância é máximo
+      \item \textbf{Descartar as bordas} onde o erro de equivariância é máximo 
             (faixa de $\sim$15--20\,px HR).
     \end{enumerate}
   \end{block}
 
-  \vspace{0.5em}
+  \vfill % Empurra o conteúdo abaixo para o final do slide de forma equilibrada
+
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
       \centering
-      \includegraphics[width=\linewidth]{mosaic_none.png}\\
-      {\small \texttt{none} --- costuras}
+      % Definimos uma altura máxima (ex: 3.5cm) e mantemos a proporção
+      \includegraphics[height=3.5cm, width=\linewidth, keepaspectratio]{mosaic_none.png}\\[0.2em]
+      {\scriptsize \texttt{none} --- costuras}
     \end{column}
     \begin{column}{0.48\textwidth}
       \centering
-      \includegraphics[width=\linewidth]{mosaic_gaussian.png}\\
-      {\small \texttt{gaussian} --- sem costura}
+      \includegraphics[height=3.5cm, width=\linewidth, keepaspectratio]{mosaic_gaussian.png}\\[0.2em]
+      {\scriptsize \texttt{gaussian} --- sem costura}
     \end{column}
   \end{columns}
 
