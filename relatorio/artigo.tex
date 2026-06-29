@@ -18,7 +18,7 @@
 
 \begin{document}
 
-\title{Invariância a Translação na Super-Resolução por Tiles:
+\title{Equivariância a Translação na Super-Resolução por Tiles:
 Análise do Gerador Satlas e Estratégia Ótima de Junção}
 
 \author{
@@ -61,7 +61,7 @@ fornecem uma recomendação prática de montagem de mosaicos sem costura.
 \end{abstract}
 
 \begin{IEEEkeywords}
-super-resolução, invariância a translação, equivariância, ESRGAN, junção de tiles,
+super-resolução, equivariância a translação, shift-consistency, ESRGAN, junção de tiles,
 blending, Sentinel-2, sensoriamento remoto
 \end{IEEEkeywords}
 
@@ -79,21 +79,29 @@ independentemente e as saídas são remontadas em um mosaico.
 Esse procedimento expõe uma tensão pouco discutida. O modelo é treinado e avaliado em
 tiles de tamanho fixo, mas \emph{não fixa a posição} do tile sobre o terreno --- a
 grade de fatiamento é arbitrária. Surge então a pergunta de pesquisa central:
-\textbf{o gerador é invariante a translação?} Se fosse, dois tiles que cobrem a mesma
+\textbf{o gerador é equivariante a translação?} Se fosse, dois tiles que cobrem a mesma
 porção física do terreno, porém deslocados entre si, deveriam produzir exatamente os
 mesmos pixels na região que compartilham. Onde isso falha, a remontagem produz
 \emph{artefatos de costura} nas junções entre tiles.
 
-Camadas convolucionais são, por construção, equivariantes a translação; CNNs completas,
-porém, não são estritamente invariantes, por causa de \textit{padding} e
-subamostragem~\cite{b_shiftinv}. Este trabalho é uma verificação empírica direta dessa
-ressalva em um gerador de SR de produção. Nossas contribuições são:
+Camadas convolucionais são, por construção, equivariantes a translação; redes
+convolucionais profundas, porém, perdem essa equivariância estrita por causa de
+\textit{padding} e subamostragem~\cite{b_shiftinv}. Essa fragilidade já foi documentada
+empiricamente (CNNs profundas degradam sob translações de poucos
+pixels~\cite{b_azulay}) e motivou tanto arquiteturas equivariantes por
+construção~\cite{b_gconv} quanto geradores \emph{alias-free}, que restauram a
+equivariância em modelos generativos~\cite{b_aliasfree} e são particularmente
+pertinentes aqui, por se tratar de um gerador adversarial (ESRGAN). Em classificadores
+busca-se \emph{invariância} (o rótulo não deve mudar com a posição do objeto), ao passo
+que num gerador de SR (mapa imagem$\to$imagem, sem \textit{pooling} global) a
+propriedade desejável é a \emph{equivariância}. Este trabalho é uma verificação empírica
+direta dessa ressalva em um gerador de SR de produção. Nossas contribuições são:
 \begin{itemize}
   \item um \textbf{protocolo de medida de \textit{shift-consistency} sem verdade de
   campo}, baseado na auto-consistência entre duas inferências do mesmo conteúdo com o
   tile deslocado por inteiros de pixel LR;
-  \item um \textbf{diagnóstico do efeito de borda} --- um perfil de erro em função da
-  distância à borda do tile --- que localiza a não-invariância e a atribui ao campo
+  \item um \textbf{diagnóstico do efeito de borda} (um perfil de erro em função da
+  distância à borda do tile) que localiza a não-equivariância e a atribui ao campo
   receptivo que excede o tile somado ao \textit{zero-padding};
   \item uma \textbf{estratégia de junção guiada pelos dados} e a comparação com
   \textit{blends} usuais por uma métrica de costura.
@@ -109,7 +117,7 @@ a \textbf{robustez} do achado e sua dispersão entre áreas.
 % ===========================================================================
 \section{Descrição do Problema}
 % ===========================================================================
-\subsection{Super-resolução por tiles e invariância a translação}
+\subsection{Super-resolução por tiles e equivariância a translação}
 O gerador do Satlas é \emph{multi-frame}: recebe $N$ imagens LR da mesma região, em
 datas distintas, empilhadas como entrada de $3N$ canais em uma janela $32\times32$, e
 produz uma única saída em alta resolução (HR) $128\times128$, com fator $s=4$,
@@ -126,7 +134,7 @@ deslocadas, os pixels físicos são os mesmos; sob \eqref{eq:equiv}, as duas sa�
 coincidiriam em $\Omega$. A discordância observada mede o quanto $f$ se afasta da
 equivariância formal das suas camadas convolucionais~\cite{b_shiftinv}.
 
-\subsection{Fontes de não-invariância no Satlas}
+\subsection{Fontes de não-equivariância no Satlas}
 Identificamos as fontes e controlamos os confundimentos:
 \begin{itemize}
   \item \textbf{Campo receptivo $\gg$ tile.} O \texttt{RRDBNet} tem $23$ blocos RRDB
@@ -150,8 +158,8 @@ Identificamos as fontes e controlamos os confundimentos:
 % ===========================================================================
 \subsection{Arquitetura base (ESRGAN/RRDBNet)}
 Usamos o gerador ESRGAN~\cite{b_esrgan} na variante \texttt{SSR\_RRDBNet} do
-Satlas-SR~\cite{b_satlas_sr} --- modelo treinado sobre o conjunto
-SatlasPretrain~\cite{b_satlas} ---, com os pesos públicos \texttt{esrgan\_8S2.pth}
+Satlas-SR~\cite{b_satlas_sr} (modelo treinado sobre o conjunto
+SatlasPretrain~\cite{b_satlas}), com os pesos públicos \texttt{esrgan\_8S2.pth}
 ($N=8$ frames).
 \textbf{Não há retreino}: todo o estudo é \emph{zero-shot}. A perda original de treino,
 reproduzida aqui apenas como contexto, combina termo de pixel, perceptual e
@@ -161,10 +169,10 @@ adversarial,
 \label{eq:loss}
 \end{equation}
 O termo perceptual~\cite{b_lpips} e o adversarial favorecem texturas plausíveis, mas
-não impõem qualquer restrição de consistência entre posições de tile --- o que motiva o
+não impõem qualquer restrição de consistência entre posições de tile, o que motiva o
 diagnóstico deste trabalho.
 
-\subsection{Protocolo de medida da invariância}
+\subsection{Protocolo de medida da equivariância}
 Constrói-se \emph{uma vez} o \textit{stack} LR fixo, reprojetando as $N$ cenas para um
 único grid comum (EPSG:3857 a $9{,}555$\,m/px) para garantir alinhamento pixel-a-pixel.
 Selecionam-se âncoras interiores sem \textit{nodata}. Para cada âncora e cada
@@ -181,7 +189,7 @@ de $100\%$ ($\Delta=0$, controle, em que $\Omega$ é o tile inteiro e a discord�
 ser nula) até ${\sim}3\%$ ($\Delta=31$).
 
 \subsection{Perfil de borda e blend ótimo}
-Para localizar a não-invariância, acumula-se a diferença absoluta média por coluna de
+Para localizar a não-equivariância, acumula-se a diferença absoluta média por coluna de
 $\Omega$ em função da distância $d$ à borda de tile mais próxima, formando o perfil
 $P(d)$. Esse perfil mede a confiabilidade local da saída: quanto maior $P(d)$, menos
 confiável aquele pixel para a junção. Define-se então uma máscara de peso
@@ -214,7 +222,7 @@ distintas, cada uma com $8$ cenas Sentinel-2 TCI (produto RGB, 10\,m) recortadas
 AOI vetorial e reprojetadas a um grid comum a $9{,}555$\,m/px. Parâmetros por região:
 \texttt{tile}$=32$, $s=4$, $N=8$, âncoras interiores sem \textit{nodata} e
 $\Delta \in \{0,3,6,10,13,16,19,22,26,29,31\}$ px LR (sobreposição de $100\%$ a
-$3{,}1\%$). Os resultados a seguir são \emph{pooled} --- a média entre as 57 regiões ---
+$3{,}1\%$). Os resultados a seguir são \emph{pooled} (a média entre as 57 regiões),
 com a dispersão (desvio-padrão) entre regiões reportada quando relevante. Esse desenho
 amplia substancialmente a quantidade de dados em relação à validação de região única
 inicial e permite aferir a robustez do achado.
@@ -223,7 +231,7 @@ inicial e permite aferir a robustez do achado.
 A Tabela~\ref{tab:consistency} e a Fig.~\ref{fig:consistency} resumem o resultado
 central. No controle ($\Delta=0$) a discordância é nula (scPSNR $\approx 100$\,dB,
 SSIM $=1{,}000$), validando o protocolo. Para qualquer deslocamento, porém, as duas
-saídas \emph{divergem}, e a divergência cresce de forma monotônica à medida que a
+saídas \emph{divergem} (Fig.~\ref{fig:example}), e a divergência cresce de forma monotônica à medida que a
 sobreposição encolhe --- ou seja, à medida que a região comparada se aproxima das
 bordas dos tiles. Entre $90\%$ e $3\%$ de sobreposição, o scPSNR cai de $30{,}8$ para
 $24{,}7$\,dB e o SSIM de $0{,}85$ para $0{,}45$, com o MAE subindo de $5{,}0$ para
@@ -232,7 +240,7 @@ scPSNR fica em torno de $\pm1{,}2$\,dB em todas as faixas de sobreposição, ind
 o achado é robusto e não um artefato de uma área específica. Nota-se que mesmo a $90\%$
 de sobreposição (região predominantemente interior) a coincidência \emph{não} é perfeita,
 coerente com a inexistência de interior limpo quando o campo receptivo excede o tile.
-\textbf{O gerador não é invariante a translação.}
+\textbf{O gerador não é equivariante a translação.}
 
 \begin{table}[htbp]
 \caption{Shift-consistency vs sobreposição (Sentinel-2, $N=8$; \emph{pooled}, média entre 57 regiões)}
@@ -262,12 +270,25 @@ coerente com a inexistência de interior limpo quando o campo receptivo excede o
 \centerline{\includegraphics[width=\columnwidth]{fig_consistency_pooled.png}}
 \caption{Consistência sob deslocamento (\emph{pooled}, 57 regiões). scPSNR (azul) e SSIM
 (vermelho) em função da sobreposição, com a faixa de dispersão entre regiões. A queda
-monotônica ao reduzir a sobreposição revela a não-invariância; o salto a $100\%$
+monotônica ao reduzir a sobreposição revela a não-equivariância; o salto a $100\%$
 corresponde ao controle $\Delta=0$.}
 \label{fig:consistency}
 \end{figure}
 
-\subsection{Onde a não-invariância se concentra}
+\begin{figure}[htbp]
+\centerline{\includegraphics[width=\columnwidth]{fig_example.png}}
+\caption{Exemplo qualitativo da não-equivariância (região-piloto T22JDM,
+$\Delta=16$ px LR $\Rightarrow$ sobreposição de $50\%$). À esquerda e ao centro, as
+saídas SR do \emph{mesmo} conteúdo físico com o tile em \textit{offset} $0$ e $16$ px
+--- visualmente quase idênticas. À direita, a diferença absoluta (escala normalizada
+$[0,1]$) na sobreposição: a discordância é não-nula e se \textbf{concentra junto às
+bordas do tile} (topo e lateral direita) e ao longo de feições de alto gradiente (a
+estrada, os limites de vegetação), coerente com o perfil de borda da
+Fig.~\ref{fig:border}.}
+\label{fig:example}
+\end{figure}
+
+\subsection{Onde a não-equivariância se concentra}
 A Fig.~\ref{fig:border} mostra o perfil $P(d)$ \emph{pooled} (média entre as 57 regiões):
 a diferença absoluta média é máxima \emph{na borda} do tile ($\sim$$10{,}1$\,DN em $d=0$)
 e \emph{decai monotonicamente} para o interior, chegando a ${\sim}2{,}0$\,DN a
@@ -282,7 +303,7 @@ do fenômeno e o \emph{insumo} para a máscara de junção ótima.
 \centerline{\includegraphics[width=\columnwidth]{fig_border_pooled.png}}
 \caption{Perfil de erro vs distância à borda de tile mais próxima (px HR), \emph{pooled}
 (57 regiões). A diferença média decai de $\sim$$10{,}1$\,DN na borda para
-$\sim$$2{,}0$\,DN no interior, localizando a não-invariância junto ao
+$\sim$$2{,}0$\,DN no interior, localizando a não-equivariância junto ao
 \textit{zero-padding}.}
 \label{fig:border}
 \end{figure}
@@ -291,15 +312,15 @@ $\sim$$2{,}0$\,DN no interior, localizando a não-invariância junto ao
 A Tabela~\ref{tab:blend} e a Fig.~\ref{fig:seam} comparam as estratégias de junção
 (\emph{pooled}, média entre as 57 regiões). Sem qualquer \textit{blend} (\texttt{none}),
 a costura é nítida: $\mathrm{seam\_excess}=1{,}30$ (excesso de $\sim$30\% de gradiente
-nas junções) e PSNR de referência de apenas $25{,}3$\,dB --- a manifestação direta do
-erro de borda diagnosticado acima. Qualquer ponderação já reduz drasticamente a costura,
+nas junções) e PSNR de referência de apenas $25{,}3$\,dB, a manifestação direta do
+erro de borda diagnosticado acima. Qualquer ponderação já reduz bastante a costura,
 e entre as estratégias clássicas a melhor é a \textbf{gaussiana}, que quase elimina a
 costura ($\mathrm{seam\_excess}=1{,}05$) e lidera a fidelidade (PSNR $34{,}4$\,dB,
-SSIM $0{,}959$). Notavelmente, a máscara \texttt{data-driven} crua ($1{,}09$ /
-$32{,}4$\,dB) \emph{não} superou a gaussiana: embora principiada, o perfil empírico
+SSIM $0{,}959$). A máscara \texttt{data-driven} crua ($1{,}09$ /
+$32{,}4$\,dB) \emph{não} superou a gaussiana: embora bem fundamentada, o perfil empírico
 carrega ruído de amostragem, ao passo que o decaimento suave do peso gaussiano casa bem
-com a forma do perfil de erro da Fig.~\ref{fig:border}. É um resultado honesto que sugere
-regularizar/parametrizar o perfil antes de usá-lo como máscara --- o que motiva as
+com a forma do perfil de erro da Fig.~\ref{fig:border}. Esse resultado sugere
+regularizar/parametrizar o perfil antes de usá-lo como máscara, o que motiva as
 variantes exploratórias da Tabela~\ref{tab:blendextra}. O \textit{ranking} de blends é
 estável entre regiões (desvio-padrão do $\mathrm{seam\_excess}$ ${\sim}0{,}04$ em todas
 as estratégias).
@@ -332,7 +353,7 @@ o pior; \texttt{gaussian} é o mais próximo do ideal entre as clássicas.}
 
 \subsection{Discussão}
 Os três resultados são coerentes entre si e confirmam a hipótese. (i) A
-\textbf{não-invariância é real e mensurável}: a auto-consistência degrada
+\textbf{não-equivariância é real e mensurável}: a auto-consistência degrada
 monotonicamente com a aproximação às bordas (Tabela~\ref{tab:consistency}). (ii) Sua
 \textbf{causa é localizada}: o perfil de borda (Fig.~\ref{fig:border}) mostra que o erro
 nasce no \textit{zero-padding} e se propaga pelo campo receptivo excessivo, exatamente
@@ -353,7 +374,7 @@ nas \textbf{57 regiões} (Tabela~\ref{tab:blendextra}). (i) \textbf{Data-driven 
 ajustando um perfil monótono e suave a $P(d)$ antes de derivar o peso $\propto 1/\hat{P}(d)$,
 a máscara guiada por dados passa a \emph{superar} a gaussiana em \emph{todos} os eixos
 ($\mathrm{seam\_excess}$ $1{,}028$ vs $1{,}047$; PSNR $34{,}85$ vs $34{,}38$\,dB; SSIM
-$0{,}964$ vs $0{,}959$) e exibe o \emph{maior} PSNR entre todas as estratégias --- a
+$0{,}964$ vs $0{,}959$) e exibe o \emph{maior} PSNR entre todas as estratégias: a
 desvantagem anterior do \texttt{data} cru ($1{,}093$) era de ruído, não de princípio.
 (ii) \textbf{Domínio de gradiente (Poisson)}: reconstruindo o mosaico a partir de um campo
 de gradientes sem costura (gradiente tomado sempre do tile mais confiável) e resolvendo a
@@ -362,11 +383,11 @@ obtém-se a \emph{menor} costura ($\mathrm{seam\_excess}=0{,}979$, abaixo de $1$
 fica mais suave que o conteúdo médio) e o \emph{maior} SSIM ($0{,}988$); a Dirichlet ancora
 a intensidade e recupera o PSNR para $32{,}4$\,dB (a variante de Neumann derivava o tom e
 caía a $\sim$$26$\,dB). (iii) \textbf{Shift-ensemble}: promediar inferências em múltiplos
-deslocamentos inteiros explora a \emph{própria} não-invariância --- cada pixel é coberto
+deslocamentos inteiros explora a \emph{própria} não-equivariância (cada pixel é coberto
 por tiles em posições relativas distintas, e os artefatos de borda, dependentes da posição,
-se cancelam --- atingindo costura quase ideal ($0{,}999$) ao custo de nitidez (PSNR
+se cancelam), atingindo costura quase ideal ($0{,}999$) ao custo de nitidez (PSNR
 $28{,}1$; melhor avaliado pela \textit{shift-consistency} que por fidelidade a uma
-referência nítida). Em suma, o gaussiano é superado: \emph{Poisson com Dirichlet} domina
+referência nítida). O gaussiano é, portanto, superado: \emph{Poisson com Dirichlet} domina
 costura e estrutura, e o \emph{data-driven suavizado} domina a fidelidade em PSNR.
 
 \begin{table}[htbp]
@@ -391,10 +412,10 @@ data (cru)          & 1,093 & 32,41 & 0,928 \\
 \section{Conclusões}
 \label{sec:conclusao}
 % ===========================================================================
-Medimos, em modo \emph{zero-shot} e sobre Sentinel-2, o grau de (não-)invariância a
+Medimos, em modo \emph{zero-shot} e sobre Sentinel-2, o grau de (não-)equivariância a
 translação do gerador ESRGAN/\texttt{SSR\_RRDBNet} do Satlas. Partindo de uma validação
 de região única, estendemos o protocolo a \textbf{57 regiões} e agregamos os resultados
-de forma \emph{pooled}. O gerador \textbf{não} é invariante: a discordância entre
+de forma \emph{pooled}. O gerador \textbf{não} é equivariante: a discordância entre
 inferências deslocadas do mesmo conteúdo cresce de $30{,}8$ para $24{,}7$\,dB de scPSNR
 à medida que a comparação se aproxima das bordas, e o perfil de erro atribui o fenômeno
 ao \textit{zero-padding} sob um campo receptivo maior que o tile. Para a montagem de
@@ -413,7 +434,7 @@ sucessoras da gaussiana. \textbf{(2) Shift-ensemble} como mitigação em tempo d
 inferência, avaliada pela própria \textit{shift-consistency} (não só por fidelidade),
 estudando o trade-off custo$\times$nitidez com o número de deslocamentos.
 \textbf{(3) Anti-aliasing} no gerador (\textit{blur-pool}~\cite{b_shiftinv}) para atacar
-a não-invariância na origem. \textbf{(4) Generalização} a outras tiles/biomas, sensores,
+a não-equivariância na origem. \textbf{(4) Generalização} a outras tiles/biomas, sensores,
 fatores de escala e arquiteturas de SR, testando a universalidade do efeito de borda.
 Por fim, o diagnóstico sugere a mitigação direta via \textit{finetuning} com uma perda
 explícita de consistência de borda entre tiles deslocados,
@@ -457,7 +478,21 @@ effectiveness of deep features as a perceptual metric,'' in \textit{Proc. CVPR},
 
 \bibitem{b_sr_survey}
 Z. Wang, J. Chen, and S. C. H. Hoi, ``Deep learning for image super-resolution: A
-survey,'' \textit{IEEE Trans. Pattern Anal. Mach. Intell.}, vol. 43, no. 10, 2021.
+survey,'' \textit{IEEE Trans. Pattern Anal. Mach. Intell.}, vol. 43, no. 10,
+pp. 3365--3387, 2021.
+
+\bibitem{b_azulay}
+A. Azulay and Y. Weiss, ``Why do deep convolutional networks generalize so poorly to
+small image transformations?,'' \textit{J. Mach. Learn. Res.}, vol. 20, no. 184,
+pp. 1--25, 2019.
+
+\bibitem{b_gconv}
+T. S. Cohen and M. Welling, ``Group equivariant convolutional networks,'' in
+\textit{Proc. ICML}, 2016, pp. 2990--2999.
+
+\bibitem{b_aliasfree}
+T. Karras \textit{et al.}, ``Alias-free generative adversarial networks,'' in
+\textit{Proc. Adv. Neural Inf. Process. Syst. (NeurIPS)}, 2021.
 
 \end{thebibliography}
 
